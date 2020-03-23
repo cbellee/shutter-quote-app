@@ -1,0 +1,73 @@
+#windowContainer {
+    height: 300px;
+    width: 600px;
+    margin: auto;
+    background-color: lightgrey;
+    border: 2px solid black;
+    display: flex;
+    overflow: hidden;
+    border-radius: 0px;
+    justify-content: left; 
+    touch-action: none;
+}
+
+div.App {
+    margin: auto;
+    width: 60em;
+}
+
+div.ui.segment {
+    margin: auto;
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 10px;
+}
+
+table {
+    margin: auto;
+}
+
+.windowItem {
+    touch-action: none;
+    user-select: none;
+    top: 0;
+    width: 1px;
+    border-left: 1px dashed black;
+}
+
+.one {
+    height: 100%;
+}
+
+.two {
+    height: 100%;
+}
+
+.three {
+    height: 100%;
+}
+
+.four {
+    height: 100%;
+}
+
+.windowItem:active {
+    background-color: rgba(168, 218, 220, 1.00);
+}
+
+.windowItem:hover {
+    cursor: pointer;
+    background-color: rgba(168, 218, 220, 1.00);
+    border-width: 1px;
+}
+
+.links {
+    list-style: none;
+}
+
+.head {
+    list-style: none;
+}
+
+
+
