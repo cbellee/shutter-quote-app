@@ -6,7 +6,7 @@ class Footer extends Component {
             <footer>
                 <ul className = "links" >
                     <li>
-                        &copy; A&J Shutters
+                        &copy; cbellee
                     </li>
                 </ul> 
             </footer>

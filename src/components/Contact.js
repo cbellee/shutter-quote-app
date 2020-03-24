@@ -2,7 +2,7 @@ import React from "react";
 
 function Contact() {
     return (
-        <div>Justin Broad. Tel: 0421 966 888</div>
+        <div>John Smith. Tel: 123456789</div>
     );
 }
 
