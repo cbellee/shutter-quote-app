@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Redirect } from 'react-router-dom';
 import WindowInputs from './WindowInputs';
+import { useForm } from 'react-hook-form';
 import { UpdateQuoteToLocalStorage, GetQuotesFromLocalStorage, GetPostCodeFromSuburb, GetSuburbList } from '../helpers/Helpers';
 import { Segment, Form, Icon, Input, Button, Grid, Card, GridRow, GridColumn } from "semantic-ui-react";
 import seedData from '../helpers/SeedData';
@@ -8,10 +9,12 @@ import PostCodeContext from './PostCodeContext';
 
 const dateCreated = new Date().toISOString();
 
-const QuoteDetailForm = ({ match }) => {
+export default function ({ match }) {
     const {
         params: { quoteId },
     } = match;
+
+    const { register, handleSubmit, watch, errors } = useForm()
 
     let quotes = GetQuotesFromLocalStorage('quotes', seedData);
     let quote = quotes.filter((quote) => quote.id == quoteId)[0];
@@ -45,7 +48,9 @@ const QuoteDetailForm = ({ match }) => {
         console.log("totalCostQuote: " + JSON.stringify(quoteState));
         var totalCost = 0;
         quoteState.windows.map((window) => {
-            totalCost = totalCost + parseInt(window.price);
+            if (parseInt(window.price) != '' || parseInt(window.price) != null) {
+                totalCost = totalCost + parseInt(window.price);
+            }
         });
         console.log("totalCost: " + totalCost);
         quoteState.total = totalCost;
@@ -72,9 +77,11 @@ const QuoteDetailForm = ({ match }) => {
 
     const handleWindowRemove = (e) => {
         const updatedWindows = [...windowState];
-        console.log(JSON.stringify(updatedWindows));
+        console.log("updated windows: " + JSON.stringify(updatedWindows));
+        console.log("deleted window index: " + e.target.dataset.idx);
         updatedWindows.splice(e.target.dataset.idx, 1);
         setWindowState(updatedWindows);
+        console.log("updated windows: " + JSON.stringify(updatedWindows));
     }
 
     const onSubmit = () => {
@@ -89,7 +96,6 @@ const QuoteDetailForm = ({ match }) => {
     }
 
     return (
-        
         <Form>
             {redirectToQuotes ? <Redirect to="/" /> : null}
             <Segment>
@@ -102,9 +108,11 @@ const QuoteDetailForm = ({ match }) => {
                                 type="text"
                                 name="firstName"
                                 id="firstName"
+                                ref={register({ required: true })}
                                 value={quoteState.firstName}
                                 onChange={handleQuoteChange}
                             />
+                            {errors.firstName && <span>This field is required</span>}
                         </Form.Field>
                     </Grid.Column>
                     <Grid.Column>
@@ -115,9 +123,11 @@ const QuoteDetailForm = ({ match }) => {
                                 type="text"
                                 name="lastName"
                                 id="lastName"
+                                ref={register({ required: true, minLength: 3, maxLength: 40 })}
                                 value={quoteState.lastName}
                                 onChange={handleQuoteChange}
                             />
+                            {errors.lastName && <span>This field is required</span>}
                         </Form.Field>
                     </Grid.Column>
                     <Grid.Column>
@@ -128,9 +138,11 @@ const QuoteDetailForm = ({ match }) => {
                                 type="text"
                                 name="email"
                                 id="email"
+                                ref={register({ required: true, pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ })}
                                 value={quoteState.email}
                                 onChange={handleQuoteChange}
                             />
+                            {errors.email && <span>valid email address is required</span>}
                         </Form.Field>
                     </Grid.Column>
                     <Grid.Column>
@@ -141,9 +153,11 @@ const QuoteDetailForm = ({ match }) => {
                                 type="text"
                                 name="phone"
                                 id="phone"
+                                ref={register({ required: true, minLength: 10, maxLength: 14, })}
                                 value={quoteState.phone}
                                 onChange={handleQuoteChange}
                             />
+                            {errors.phone && <span>This field is required</span>}
                         </Form.Field>
                     </Grid.Column>
                     <Grid.Column>
@@ -154,9 +168,11 @@ const QuoteDetailForm = ({ match }) => {
                                 type="text"
                                 name="street"
                                 id="street"
+                                ref={register({ required: true, minLength: 3, maxLength: 40 })}
                                 value={quoteState.street}
                                 onChange={handleQuoteChange}
                             />
+                            {errors.street && <span>This field is required</span>}
                         </Form.Field>
                     </Grid.Column>
                     <Grid.Column>
@@ -193,37 +209,39 @@ const QuoteDetailForm = ({ match }) => {
                                 type="text"
                                 name="total"
                                 id="total"
-                                value={quoteState.total}
-                                onChange={handleTotalChange}
+                                defaultValue={quoteState.total || ""}
+                                onChange={handleQuoteChange}
                             />
                         </Form.Field>
                     </Grid.Column>
+                    <Grid.Row>
+                        <Grid.Column>
+                            <Form.Field>
+                                <Button
+                                    floated="left"
+                                    icon
+                                    labelPosition="left"
+                                    color="blue"
+                                    size="small"
+                                    onClick={addWindow}>
+                                    <Icon name="edit" /> Add Window
+                        </Button>
+                            </Form.Field>
+                            <Form.Field>
+                                <Button
+                                    floated="left"
+                                    icon
+                                    labelPosition="left"
+                                    color="green"
+                                    size="small"
+                                    onClick={handleSubmit(onSubmit)}>
+                                    <Icon name="edit" /> Save Quote
+                        </Button>
+                            </Form.Field>
+                        </Grid.Column>
+                    </Grid.Row>
                 </Grid>
             </Segment>
-            <Grid>
-                <Form.Field>
-                    <Button
-                        floated="left"
-                        icon
-                        labelPosition="left"
-                        color="blue"
-                        size="small"
-                        onClick={addWindow}>
-                        <Icon name="edit" /> Add Window
-                        </Button>
-                </Form.Field>
-                <Form.Field>
-                    <Button
-                        floated="left"
-                        icon
-                        labelPosition="left"
-                        color="green"
-                        size="small"
-                        onClick={onSubmit}>
-                        <Icon name="edit" /> Save Quote
-                        </Button>
-                </Form.Field>
-            </Grid>
             <Grid columns={1}>
                 <Grid.Column>
                     {
@@ -239,8 +257,6 @@ const QuoteDetailForm = ({ match }) => {
                     }
                 </Grid.Column>
             </Grid>
-        </Form >
+        </Form>
     );
 };
-
-export default QuoteDetailForm;

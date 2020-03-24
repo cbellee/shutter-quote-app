@@ -1,26 +1,37 @@
 #windowContainer {
-    height: 300px;
-    width: 600px;
     margin: auto;
-    background-color: lightgrey;
+    background-color: lightgray;
     border: 2px solid black;
     display: flex;
     overflow: hidden;
-    border-radius: 0px;
+    border-radius: 5px;
     justify-content: left; 
     touch-action: none;
 }
 
 div.App {
     margin: auto;
-    width: 60em;
+    padding: 10px; 
+}
+
+#root {
+    background: silver;
+    height: 100%;
+    clear: both;
+}
+
+body {
+    background:silver;
+}
+
+html {
+    background: silver; 
 }
 
 div.ui.segment {
     margin: auto;
     width: 100%;
     margin-bottom: 15px;
-    padding: 10px;
 }
 
 table {
@@ -67,6 +78,14 @@ table {
 
 .head {
     list-style: none;
+}
+
+.ui.form {
+    
+}
+
+.ui.container {
+
 }
 
 

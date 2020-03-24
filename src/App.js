@@ -13,13 +13,15 @@ function App() {
   const postCodeDataHook = useState(PostCodeData);
 
   return (
-    <PostCodeContext.Provider value={postCodeDataHook}>
-      <div className="App">
-        <Header />
-        <MainMenu />
-        <Footer />
-      </div>
-    </PostCodeContext.Provider>
+    <html>
+      <PostCodeContext.Provider value={postCodeDataHook}>
+        <div className="App">
+          <Header />
+          <MainMenu />
+          <Footer />
+        </div>
+      </PostCodeContext.Provider>
+    </html>
   );
 }
 

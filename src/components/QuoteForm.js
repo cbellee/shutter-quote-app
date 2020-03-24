@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import { useForm } from 'react-hook-form';
 import { Redirect } from 'react-router-dom';
 import WindowInputs from './WindowInputs';
 import { AddQuoteToLocalStorage, GetQuotesFromLocalStorage, GetPostCodeFromSuburb, GetSuburbList } from '../helpers/Helpers';
@@ -8,8 +9,9 @@ import PostCodeContext from './PostCodeContext';
 
 const dateCreated = new Date().toISOString();
 
-const QuoteForm = () => {
+export default function QuoteForm() {
     const postCodes = useContext(PostCodeContext)[0];
+    const { register, handleSubmit, watch, errors } = useForm()
     var stateName = "NSW"
     var suburbs = GetSuburbList(postCodes, stateName);
 
@@ -58,20 +60,25 @@ const QuoteForm = () => {
 
     const handleWindowRemove = (e) => {
         const updatedWindows = [...windowState];
-        console.log(JSON.stringify(updatedWindows));
+        console.log("updated windows: " + JSON.stringify(updatedWindows));
+        console.log("deleted window index: " + e.target.dataset.idx);
         updatedWindows.splice(e.target.dataset.idx, 1);
         setWindowState(updatedWindows);
+        console.log("updated windows: " + JSON.stringify(updatedWindows));
     }
 
-    const onSubmit = () => {
+    const onSubmit = data => {
         quoteState.windows = windowState;
         var totalCost = 0;
         quoteState.windows.map((window) => {
-            totalCost = totalCost + parseInt(window.price);
+            if (parseInt(window.price) != '') {
+                totalCost = totalCost + parseInt(window.price);
+            }
         });
         quoteState.total = totalCost;
         AddQuoteToLocalStorage('quotes', quoteState, seedData);
         setRedirectToQuotes(true);
+        console.log(data);
     }
 
     return (
@@ -87,9 +94,11 @@ const QuoteForm = () => {
                                 type="text"
                                 name="firstName"
                                 id="firstName"
+                                ref={register({ required: true })}
                                 value={quoteState.firstName}
                                 onChange={handleQuoteChange}
                             />
+                            {errors.firstName && <span>This field is required</span>}
                         </Form.Field>
                     </Grid.Column>
                     <Grid.Column>
@@ -100,9 +109,11 @@ const QuoteForm = () => {
                                 type="text"
                                 name="lastName"
                                 id="lastName"
+                                ref={register({ required: true, minLength: 3, maxLength: 40 })}
                                 value={quoteState.lastName}
                                 onChange={handleQuoteChange}
                             />
+                            {errors.lastName && <span>This field is required</span>}
                         </Form.Field>
                     </Grid.Column>
                     <Grid.Column>
@@ -113,9 +124,11 @@ const QuoteForm = () => {
                                 type="text"
                                 name="email"
                                 id="email"
+                                ref={register({ required: true, pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ })}
                                 value={quoteState.email}
                                 onChange={handleQuoteChange}
                             />
+                            {errors.email && <span>valid email address is required</span>}
                         </Form.Field>
                     </Grid.Column>
                     <Grid.Column>
@@ -126,9 +139,11 @@ const QuoteForm = () => {
                                 type="text"
                                 name="phone"
                                 id="phone"
+                                ref={register({ required: true, minLength: 10, maxLength: 14 })}
                                 value={quoteState.phone}
                                 onChange={handleQuoteChange}
                             />
+                            {errors.phone && <span>This field is required</span>}
                         </Form.Field>
                     </Grid.Column>
                     <Grid.Column>
@@ -139,9 +154,11 @@ const QuoteForm = () => {
                                 type="text"
                                 name="street"
                                 id="street"
+                                ref={register({ required: true, minLength: 3, maxLength: 40 })}
                                 value={quoteState.street}
                                 onChange={handleQuoteChange}
                             />
+                            {errors.street && <span>This field is required</span>}
                         </Form.Field>
                     </Grid.Column>
                     <Grid.Column>
@@ -193,15 +210,9 @@ const QuoteForm = () => {
                         labelPosition="left"
                         color="blue"
                         size="small"
-                        //disabled={!selectedId}
                         onClick={addWindow}>
                         <Icon name="edit" /> Add Window
                         </Button>
-                    {/*  <Input
-                        type="button"
-                        value="Add Window"
-                        onClick={addWindow}
-                    /> */}
                 </Form.Field>
                 <Form.Field>
                     <Button
@@ -210,11 +221,9 @@ const QuoteForm = () => {
                         labelPosition="left"
                         color="green"
                         size="small"
-                        //disabled={!selectedId}
-                        onClick={onSubmit}>
+                        onClick={handleSubmit(onSubmit)}>
                         <Icon name="edit" /> Save Quote
                         </Button>
-                    {/*  <Input type="submit" value="Save Quote" onClick={onSubmit} /> */}
                 </Form.Field>
             </Grid>
             <Grid columns={1}>
@@ -235,5 +244,3 @@ const QuoteForm = () => {
         </Form >
     );
 };
-
-export default QuoteForm;
