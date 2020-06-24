@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/cbellee/shutter-quote-app/restapi/api"
 	"github.com/deepmap/oapi-codegen/pkg/middleware"
+	"github.com/labstack/echo/v4"
 	echomiddleware "github.com/labstack/echo/v4/middleware"
-	"github.com/labstack/v4/echo"
 )
 
 func main() {

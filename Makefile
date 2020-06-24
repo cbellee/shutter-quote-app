@@ -1,4 +1,5 @@
 generate:
-	oapi-codegen -generate types ./api/swagger-v3.yml > ./api/quoteapp.types.go
-	oapi-codegen -generate server ./api/swagger-v3.yml > ./api/quoteapp.server.go
-	oapi-codegen -generate spec ./api/swagger-v3.yml > ./api/quoteapp.spec.go
+	oapi-codegen --package=api --generate types ./api/swagger.yml > ./api/store/quotestore-types.go
+	oapi-codegen --package=api --generate server,spec ./api/swagger.yml > ./api/store/quotestore-server.go
+	#go:generate go run github.com/deepmap/oapi-codegen/cmd/oapi-codegen --package=api --generate types -o petstore-types.gen.go ../../petstore-expanded.yaml
+	#go:generate go run github.com/deepmap/oapi-codegen/cmd/oapi-codegen --package=api --generate server,spec -o petstore-server.gen.go ../../petstore-expanded.yaml
