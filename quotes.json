@@ -1,0 +1,32 @@
+[
+    {
+        "id": 1000,
+        "customerId": 2000,
+        "tags": "",
+        "windows": [
+            {
+                "height": 1200,
+                "width": 2400,
+                "panel": 3,
+                "notes": "some notes...",
+                "price": 456.90,
+                "material": "wood"
+            }
+        ]
+    },
+    {
+        "id": 1001,
+        "customerId": 2001,
+        "tags": "",
+        "windows": [
+            {
+                "height": 1600,
+                "width": 3400,
+                "panel": 4,
+                "notes": "some notes...",
+                "price": 1047.00,
+                "material": "aluminium"
+            }
+        ]
+    }
+]

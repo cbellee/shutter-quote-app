@@ -1,0 +1,30 @@
+[
+    {
+        "id": 2000,
+        "firstname": "Chris",
+        "lastname": "Bellee",
+        "email": "christian.bellee@gmail.com",
+        "phone": "0446123456",
+        "address": {
+            "city": "Sydney",
+            "phone": "0446123456",
+            "postcode": "2121",
+            "suburb": "North Epping"
+        },
+        "tags": ""
+    },
+    {
+        "id": 2001,
+        "firstname": "John",
+        "lastname": "Doe",
+        "email": "john.doe@gmail.com",
+        "phone": "0447654321",
+        "address": {
+            "city": "Melbourne",
+            "phone": "0447654321",
+            "postcode": "4040",
+            "suburb": "Frankston"
+        },
+        "tags": ""
+    }
+]
