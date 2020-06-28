@@ -6,14 +6,13 @@ import (
 	"os"
 
 	"github.com/cbellee/shutter-quote-app/api"
+
 	"github.com/cbellee/shutter-quote-app/api/config"
 	"github.com/cbellee/shutter-quote-app/api/db"
 	customerRepository "github.com/cbellee/shutter-quote-app/api/repository"
 	"github.com/deepmap/oapi-codegen/pkg/middleware"
 	"github.com/labstack/echo/v4"
 	echomiddleware "github.com/labstack/echo/v4/middleware"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func main() {
