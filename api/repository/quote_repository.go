@@ -1,28 +1,29 @@
-package repository
+package quoteRepository
 
 import (
 	"context"
 	"fmt"
 	"log"
 
+	"github.com/cbellee/shutter-quote-app/api"
 	"github.com/cbellee/shutter-quote-app/api/config"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 var (
-	conf, err = config.LoadConfig()
-	//dbName       = "goShopDb"
-	//dbCollection = "quotes"
+	conf, err    = config.LoadConfig()
+	dbName       = "quoteAppDB"
+	dbCollection = "quotes"
 )
 
 // QuoteRepository used to get quote data from mongodDB
 type QuoteRepository interface {
-	Get(id int64) (*Quote, error)
-	List() ([]*Quote, error)
-	Insert(quote Quote) (lastInsertID interface{}, err error)
+	Get(id int64) (*api.Quote, error)
+	List() ([]*api.Quote, error)
+	Insert(quote api.Quote) (lastInsertID interface{}, err error)
 	Delete(id int64) error
-	Update(quote Quote, id int64) (upsertedCount int64, err error)
+	Update(quote api.Quote, id int64) (upsertedCount int64, err error)
 }
 
 type quoteRepository struct {
@@ -37,8 +38,8 @@ func NewQuoteRepository(client *mongo.Client) QuoteRepository {
 }
 
 // Get
-func (r *quoteRepository) Get(id int64) (quote *Quote, err error) {
-	var result *Quote
+func (r *quoteRepository) Get(id int64) (quote *api.Quote, err error) {
+	var result *api.Quote
 	filter := bson.D{{"id", id}}
 	collection := r.client.Database(conf.DbName).Collection(conf.DbCollection)
 	err = collection.FindOne(context.Background(), filter).Decode(&result)
@@ -46,8 +47,8 @@ func (r *quoteRepository) Get(id int64) (quote *Quote, err error) {
 }
 
 // List
-func (r *quoteRepository) List() (quotes []*Quote, err error) {
-	var results []*Quote
+func (r *quoteRepository) List() (quotes []*api.Quote, err error) {
+	var results []*api.Quote
 	collection := r.client.Database(conf.DbName).Collection(conf.DbCollection)
 	cur, err := collection.Find(context.Background(), bson.D{})
 	if err != nil {
@@ -57,7 +58,7 @@ func (r *quoteRepository) List() (quotes []*Quote, err error) {
 	//defer cur.Close(context.Background())
 
 	for cur.Next(context.Background()) {
-		var element Quote
+		var element api.Quote
 		err := cur.Decode(&element)
 		if err != nil {
 			log.Fatal(err)
@@ -88,7 +89,7 @@ func (r *quoteRepository) Delete(id int64) (err error) {
 }
 
 // Insert
-func (r *quoteRepository) Insert(quote Quote) (lastInsertID interface{}, err error) {
+func (r *quoteRepository) Insert(quote api.Quote) (lastInsertID interface{}, err error) {
 	collection := r.client.Database(conf.DbName).Collection(conf.DbCollection)
 	insertResult, err := collection.InsertOne(context.Background(), quote)
 	if err != nil {
@@ -99,7 +100,7 @@ func (r *quoteRepository) Insert(quote Quote) (lastInsertID interface{}, err err
 }
 
 // Update
-func (r *quoteRepository) Update(quote Quote, id int64) (upsertedCount int64, err error) {
+func (r *quoteRepository) Update(quote api.Quote, id int64) (upsertedCount int64, err error) {
 	filter := bson.D{{"id", id}}
 	collection := r.client.Database(conf.DbName).Collection(conf.DbCollection)
 	updateResult, err := collection.UpdateOne(context.Background(), filter, quote)

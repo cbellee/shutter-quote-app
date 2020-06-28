@@ -6,9 +6,14 @@ import (
 	"os"
 
 	"github.com/cbellee/shutter-quote-app/api"
+	"github.com/cbellee/shutter-quote-app/api/config"
+	"github.com/cbellee/shutter-quote-app/api/db"
+	customerRepository "github.com/cbellee/shutter-quote-app/api/repository"
 	"github.com/deepmap/oapi-codegen/pkg/middleware"
 	"github.com/labstack/echo/v4"
 	echomiddleware "github.com/labstack/echo/v4/middleware"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func main() {
@@ -22,7 +27,10 @@ func main() {
 	}
 
 	swagger.Servers = nil
-	store := api.NewStore(api.SeedQuotes("quotes.json"), api.SeedCustomers("customers.json"))
+	conf, err := config.LoadConfig()
+	dbClient, err := db.Connect(conf)
+	c := customerRepository.NewCustomerRepository(dbClient)
+	//store := api.NewStore(api.SeedQuotes("quotes.json"), api.SeedCustomers("customers.json"))
 
 	e := echo.New()
 	e.Use((echomiddleware.Logger()))

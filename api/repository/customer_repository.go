@@ -1,28 +1,29 @@
-package repository
+package customerRepository
 
 import (
 	"context"
 	"fmt"
 	"log"
 
+	"github.com/cbellee/shutter-quote-app/api"
 	"github.com/cbellee/shutter-quote-app/api/config"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 var (
-	conf, err = config.LoadConfig()
-	//dbName       = "goShopDb"
-	//dbCollection = "customers"
+	conf, err    = config.LoadConfig()
+	dbName       = "quoteAppDB"
+	dbCollection = "customers"
 )
 
 // CustomerRepository used to get customer data from mongodDB
 type CustomerRepository interface {
-	Get(id int64) (*Customer, error)
-	List() ([]*Customer, error)
-	Insert(customer Customer) (lastInsertID interface{}, err error)
+	Get(id int64) (*api.Customer, error)
+	List() ([]*api.Customer, error)
+	Insert(customer api.Customer) (lastInsertID interface{}, err error)
 	Delete(id int64) error
-	Update(customer Customer, id int64) (upsertedCount int64, err error)
+	Update(customer api.Customer, id int64) (upsertedCount int64, err error)
 }
 
 type customerRepository struct {
@@ -37,8 +38,8 @@ func NewCustomerRepository(client *mongo.Client) CustomerRepository {
 }
 
 // Get
-func (r *customerRepository) Get(id int64) (customer *Customer, err error) {
-	var result *Customer
+func (r *customerRepository) Get(id int64) (customer *api.Customer, err error) {
+	var result *api.Customer
 	filter := bson.D{{"id", id}}
 	collection := r.client.Database(conf.DbName).Collection(conf.DbCollection)
 	err = collection.FindOne(context.Background(), filter).Decode(&result)
@@ -46,8 +47,8 @@ func (r *customerRepository) Get(id int64) (customer *Customer, err error) {
 }
 
 // List
-func (r *customerRepository) List() (customers []*Customer, err error) {
-	var results []*Customer
+func (r *customerRepository) List() (customers []*api.Customer, err error) {
+	var results []*api.Customer
 	collection := r.client.Database(conf.DbName).Collection(conf.DbCollection)
 	cur, err := collection.Find(context.Background(), bson.D{})
 	if err != nil {
@@ -57,7 +58,7 @@ func (r *customerRepository) List() (customers []*Customer, err error) {
 	//defer cur.Close(context.Background())
 
 	for cur.Next(context.Background()) {
-		var element Customer
+		var element api.Customer
 		err := cur.Decode(&element)
 		if err != nil {
 			log.Fatal(err)
@@ -88,7 +89,7 @@ func (r *customerRepository) Delete(id int64) (err error) {
 }
 
 // Insert
-func (r *customerRepository) Insert(customer Customer) (lastInsertID interface{}, err error) {
+func (r *customerRepository) Insert(customer api.Customer) (lastInsertID interface{}, err error) {
 	collection := r.client.Database(conf.DbName).Collection(conf.DbCollection)
 	insertResult, err := collection.InsertOne(context.Background(), customer)
 	if err != nil {
@@ -99,7 +100,7 @@ func (r *customerRepository) Insert(customer Customer) (lastInsertID interface{}
 }
 
 // Update
-func (r *customerRepository) Update(customer Customer, id int64) (upsertedCount int64, err error) {
+func (r *customerRepository) Update(customer api.Customer, id int64) (upsertedCount int64, err error) {
 	filter := bson.D{{"id", id}}
 	collection := r.client.Database(conf.DbName).Collection(conf.DbCollection)
 	updateResult, err := collection.UpdateOne(context.Background(), filter, customer)

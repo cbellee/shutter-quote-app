@@ -1,34 +1,11 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"os"
 
 	"github.com/labstack/echo/v4"
 )
-
-// SeedCustomers adds test data to the store
-func SeedCustomers(seedFileName string) map[int32]Customer {
-	seedCustomers := make(map[int32]Customer)
-	jsonFile, err := os.Open(seedFileName)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Printf("successfully loaded %s\n", seedFileName)
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-
-	var customers []Customer
-	json.Unmarshal(byteValue, &customers)
-
-	for _, customer := range customers {
-		fmt.Printf("customer Id: %d\n", *customer.Id)
-		seedCustomers[*customer.Id] = customer
-	}
-	return seedCustomers
-}
 
 // This function wraps sending of an error in the Error format, and
 // handling the failure to marshal that.
@@ -49,12 +26,17 @@ func (c *Store) AddCustomer(ctx echo.Context) error {
 		return sendCustomerstoreError(ctx, http.StatusBadRequest, "Invalid format for Customer")
 	}
 
-	c.Lock.Lock()
-	defer c.Lock.Unlock()
+	//c.Lock.Lock()
+	//defer c.Lock.Unlock()
 
-	newCustomer.Id = &c.NextCustomerID
-	c.NextCustomerID = c.NextCustomerID + 1
-	c.Customers[*newCustomer.Id] = newCustomer
+	result, err := c.customerRepository.Insert(newCustomer)
+	if err != nil {
+		return err
+	}
+
+	//newCustomer.Id = &c.NextCustomerID
+	//c.NextCustomerID = c.NextCustomerID + 1
+	//c.Customers[*newCustomer.Id] = newCustomer
 	//fmt.Printf("newCustomer.Id: %d\n", *newCustomer.Id)
 
 	err = ctx.JSON(http.StatusCreated, newCustomer)

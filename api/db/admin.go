@@ -7,10 +7,36 @@ import (
 	"io/ioutil"
 	"log"
 
-	"github.com/cbellee/shutter-quote-app/repository"
 	"github.com/cbellee/shutter-quote-app/config"
+	"github.com/cbellee/shutter-quote-app/repository"
 	"go.mongodb.org/mongo-driver/mongo"
 )
+
+// loadSeedData
+func loadSeedData(conf config.Conf, collection *mongo.Collection, repository []interface{}, fileName string) (res *mongo.InsertManyResult, err error) {
+	// Load values from JSON file to model
+	//var items repository //[]repository.Customer
+	byteValues, err := ioutil.ReadFile(fileName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// read items from JSON file
+	json.Unmarshal(byteValues, &repository)
+	var cst []interface{}
+	for _, c := range repository {
+		cst = append(cst, c)
+	}
+
+	// insert items into DB
+	res, err = collection.InsertMany(context.Background(), cst)
+	if err != nil {
+		return nil, err
+	}
+	numInserts := len(res.InsertedIDs)
+	fmt.Printf("inserted %d items into collection '%s' in database '%s'\n", numInserts, conf.DbCollection, conf.DbName)
+	return res, nil
+}
 
 // Create database
 func Create(conf config.Config) (res *mongo.InsertManyResult, err error) {
@@ -27,28 +53,12 @@ func Create(conf config.Config) (res *mongo.InsertManyResult, err error) {
 		return
 	}
 
-	// Load values from JSON file to model
-	var customers []repository.Customer
-	byteValues, err := ioutil.ReadFile("seed_data.json")
-	if err != nil {
-		log.Fatal(err)
+	switch conf.DbCollection {
+	case "customers":
+		loadSeedData(conf, collection, repository.Customer, "customers.json")
+	case "quotes":
+		loadSeedData(conf, collection, repository.Customer, "quotes.json")
 	}
-
-	// read customers from JSON file
-	json.Unmarshal(byteValues, &customers)
-	var cst []interface{}
-	for _, c := range customers {
-		cst = append(cst, c)
-	}
-
-	// insert customers into DB
-	res, err = collection.InsertMany(context.Background(), cst)
-	if err != nil {
-		return nil, err
-	}
-	numInserts := len(res.InsertedIDs)
-	fmt.Printf("inserted %d customers into collection '%s' in database '%s'\n", numInserts, conf.DbCollection, conf.DbName)
-	return res, nil
 }
 
 // Drop database
